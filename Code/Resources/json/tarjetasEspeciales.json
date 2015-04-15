@@ -1,0 +1,67 @@
+{
+  "Suerte": {
+    "Tarjeta1": {
+      "Mensaje":"Adelantatate hasta la casilla de\n salida y cobra los 200 $",
+      "Accion":"Mover",
+	  "Posicion":0
+    },
+    "Tarjeta2": {
+      "Mensaje": "El Banco te paga 50 $",
+      "Accion":"Cobrar",
+	  "Cantidad":50
+    },
+	"Tarjeta3": {
+      "Mensaje":"Por impuestos sobre tus rentas\n pagas 120 $",
+      "Accion":"Pagar",
+	  "Cantidad":120
+    },
+	"Tarjeta4": {
+      "Mensaje":"Por intereses pagas al Banco \n25 $",
+      "Accion":"Pagar",
+	  "Cantidad":25
+    },
+	"Tarjeta5": {
+      "Mensaje":"Ve a la carcel",
+      "Accion":"Mover",
+	  "Posicion":10
+    },
+	"Tarjeta6": {
+      "Mensaje":"Dirigete al Atomium,\n si no tiene dueño\n comprala o subastala",
+      "Accion":"Mover",
+	  "Posicion":29
+    }
+  },
+  
+  "Comunidad": {
+    "Tarjeta1": {
+      "Mensaje":"Adelantatate hasta la casilla de\n salida y cobra los 200 $",
+      "Accion":"Mover",
+	  "Posicion":0
+    },
+    "Tarjeta2": {
+      "Mensaje": "El Banco te paga 50 $",
+      "Accion":"Cobrar",
+	  "Cantidad":50
+    },
+	"Tarjeta3": {
+      "Mensaje":"Por impuestos sobre tus rentas\n pagas 120 $",
+      "Accion":"Pagar",
+	  "Cantidad":120
+    },
+	"Tarjeta4": {
+      "Mensaje":"Por intereses pagas al Banco \n25 $",
+      "Accion":"Pagar",
+	  "Cantidad":25
+    },
+	"Tarjeta5": {
+      "Mensaje":"Ve a la carcel",
+      "Accion":"Mover",
+	  "Posicion":10
+    },
+	"Tarjeta6": {
+      "Mensaje":"Dirigete al Atomium,\n si no tiene dueño\n comprala o subastala",
+      "Accion":"Mover",
+	  "Posicion":29
+    }
+  }
+}
