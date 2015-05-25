@@ -63,7 +63,7 @@ bool LoadScreen::init()
     //Creamos y mostarmos el fondo
     auto background = Sprite::create("fondo_inicio_nb.png");
     background->setPosition(Vec2(visibleSize4.width/2 + origin4.x, visibleSize4.height/2 + origin4.y));
-    background->setScale(visibleSize4.width/background->getContentSize().width);
+    background->setScale(visibleSize4.height/background->getContentSize().height);
     this->addChild(background,-1,"background");
 
 

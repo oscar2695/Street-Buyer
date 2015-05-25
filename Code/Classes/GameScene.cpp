@@ -6,6 +6,7 @@
 #include "GameScene.h"
 #include "PauseMenu.h"
 #include "BuildMenu.h"
+#include "NegotiateMenu.h"
 #include "GUI/CCControlExtension/CCControlExtensions.h"
 #include "json/document.h"
 #include "json/filestream.h"
@@ -123,9 +124,19 @@ bool GameScreen::init()
     //Mostrar botones menu
     this->mostrarBotonPausa();
     this->mostrarBotonConstruir();
+    this->mostrarBotonNegociar();
 
+    //cargamos los simbolos de propiedad
     this->cargarSimbolosPropiedad();
 
+    //cargamos los simbolos de las construcciones
+    this->actualizarConstrucciones();
+
+   /* //Probando el mostrar las casas
+    this->colocarSimboloConstruccion(6,4);
+    this->colocarSimboloConstruccion(14,4);
+    this->colocarSimboloConstruccion(23,4);
+    this->colocarSimboloConstruccion(37,4);*/
 
 
     auto touchListener = EventListenerTouchOneByOne::create();
@@ -173,6 +184,7 @@ void GameScreen::crearDados(Ref* pSender){
 
 
     //CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("audio/dieShuffle3.wav");
+
 	//Nodo que trae el numero del jugador.
 	Node* envia = (Node*) pSender;
 	jugador=envia->getTag();
@@ -307,6 +319,13 @@ void GameScreen::moverFicha(Sprite* ficha,int pos,int tirada){
 }
 
 void GameScreen::mostrarPopupDados(Ref* pSender){
+	cocos2d::log("Jugador actual pausa: %d",documentoJSON["Partida1"]["JugadorActual"].GetInt());
+	cocos2d::log("Numero Jugadores pausa: %d",documentoJSON["Partida1"]["NumeroJugadores"].GetInt());
+	if (documentoJSON["Partida1"]["JugadorActual"].GetInt()==documentoJSON["Partida1"]["NumeroJugadores"].GetInt()){
+		documentoJSON["Partida1"]["JugadorActual"].SetInt(1);
+	}else{
+		documentoJSON["Partida1"]["JugadorActual"].SetInt(jugador+1);
+	}
 
 	this->removeChildByName("layer_turno");
 	Node* envia = (Node* )pSender;
@@ -536,8 +555,8 @@ void GameScreen::mostrarMenuPausa(Ref* pSender){
 
 void GameScreen::mostrarBotonConstruir(){
 
-	auto construir = MenuItemImage::create("boton_pausa.png","boton_pausa.png",CC_CALLBACK_1(GameScreen::mostrarMenuConstruir, this));
-	construir->setPosition(Vec2(origin.x+construir->getContentSize().width/2,origin.y+construir->getContentSize().height/2*3));
+	auto construir = MenuItemImage::create("boton_construir.png","boton_construir.png",CC_CALLBACK_1(GameScreen::mostrarMenuConstruir, this));
+	construir->setPosition(Vec2(origin.x+construir->getContentSize().width/2,origin.y+construir->getContentSize().height/2*2.5));
 	construir->setScale(0.5);
 	construir->setName("boton_construir");
 
@@ -552,6 +571,26 @@ void GameScreen::mostrarMenuConstruir(Ref* pSender){
 	layer->setScale(0.8);
 
 	this->addChild(layer,5,"Menu Construir");
+}
+
+void GameScreen::mostrarBotonNegociar(){
+
+	auto negociar = MenuItemImage::create("boton_negociar.png","boton_negociar.png",CC_CALLBACK_1(GameScreen::mostrarMenuNegociar, this));
+	negociar->setPosition(Vec2(origin.x+negociar->getContentSize().width*1.4,origin.y+negociar->getContentSize().height/2*2.5));
+	negociar->setScale(0.5);
+	negociar->setName("boton_construir");
+
+	auto menuNegociar = Menu::create(negociar, nullptr);
+	menuNegociar->setPosition(Vec2::ZERO);
+	this->addChild(menuNegociar,0);
+}
+
+void GameScreen::mostrarMenuNegociar(Ref* pSender){
+	this->escribirArchivoJSON();
+	auto layer = NegotiateScreen::create();
+	layer->setScale(0.8);
+
+	this->addChild(layer,5,"Menu Negociar");
 }
 
 void GameScreen::mostrarTurno(int jugador){
@@ -624,15 +663,6 @@ void GameScreen::crearFichas(){
 }
 
 void GameScreen::escribirArchivoJSON(){
-	//actualizamos el turno en el JSON
-
-	cocos2d::log("Jugador actual pausa: %d",documentoJSON["Partida1"]["JugadorActual"].GetInt());
-	cocos2d::log("Numero Jugadores pausa: %d",documentoJSON["Partida1"]["NumeroJugadores"].GetInt());
-	if (documentoJSON["Partida1"]["JugadorActual"].GetInt()==documentoJSON["Partida1"]["NumeroJugadores"].GetInt()){
-		documentoJSON["Partida1"]["JugadorActual"].SetInt(1);
-	}else{
-		documentoJSON["Partida1"]["JugadorActual"].SetInt(jugador+1);
-	}
 
 	rapidjson::StringBuffer  buffer;
 	rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
@@ -1243,8 +1273,10 @@ void GameScreen::colocarSimboloPropiedad(int propiedad,int jugador){
 		}
 	}
 	simbolo->setScale(0.3);
-	this->addChild(simbolo,1,propiedad);
-	cocos2d::log("he colocado e simbolo");
+	char nombre_simbolo[100];
+	sprintf(nombre_simbolo,"Simbolo_%d",propiedad);
+	this->removeChildByName(nombre_simbolo);
+	this->addChild(simbolo,1,nombre_simbolo);
 
 }
 
@@ -1543,10 +1575,94 @@ void GameScreen::ejecutarAccionComunidad(Ref* pSender){
 	this->removeChildByName("popup_tarjeta_especial");
 }
 
+void GameScreen::actualizarConstrucciones(){
+	rapidjson::Value::MemberIterator M;
+	for(M = tableroJSON.MemberonBegin();M!=tableroJSON.MemberonEnd();M++){
+		if (documentoJSON["Partida1"]["Jugador1"]["Propiedades"].HasMember(M->value["Nombre"].GetString())){
+			int propiedad = atoi(M->name.GetString());
+			int construcciones = documentoJSON["Partida1"]["Jugador1"]["Propiedades"][M->value["Nombre"].GetString()].GetInt();
+			if(construcciones>0){
+				this->colocarSimboloConstruccion(propiedad,construcciones);
+			}
+		}
+		if (documentoJSON["Partida1"]["Jugador2"]["Propiedades"].HasMember(M->value["Nombre"].GetString())){
+			int propiedad = atoi(M->name.GetString());
+			int construcciones = documentoJSON["Partida1"]["Jugador2"]["Propiedades"][M->value["Nombre"].GetString()].GetInt();
+			if(construcciones>0){
+				this->colocarSimboloConstruccion(propiedad,construcciones);
+			}
+		}
+		if (documentoJSON["Partida1"]["Jugador3"]["Propiedades"].HasMember(M->value["Nombre"].GetString())){
+			int propiedad = atoi(M->name.GetString());
+			int construcciones = documentoJSON["Partida1"]["Jugador3"]["Propiedades"][M->value["Nombre"].GetString()].GetInt();
+			if(construcciones>0){
+				this->colocarSimboloConstruccion(propiedad,construcciones);
+			}
+		}
+		if (documentoJSON["Partida1"]["Jugador4"]["Propiedades"].HasMember(M->value["Nombre"].GetString())){
+			int propiedad = atoi(M->name.GetString());
+			int construcciones = documentoJSON["Partida1"]["Jugador4"]["Propiedades"][M->value["Nombre"].GetString()].GetInt();
+			if(construcciones>0){
+				this->colocarSimboloConstruccion(propiedad,construcciones);
+			}
+		}
 
+	}
+}
 
-bool GameScreen::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)
-{
+void GameScreen::colocarSimboloConstruccion(int propiedad,int numero){
+
+	Sprite* simbolo;
+	if (numero==1){
+		simbolo = Sprite::create("img/casas/casa1.png");
+	}else{
+		if (numero==2){
+				simbolo = Sprite::create("img/casas/casa2.png");
+		}else{
+			if (numero==3){
+					simbolo = Sprite::create("img/casas/casa3.png");
+			}else{
+				if (numero==4){
+						simbolo = Sprite::create("img/casas/casa4.png");
+				}else{
+					if (numero==5){
+							simbolo = Sprite::create("img/casas/casa5.png");
+					}
+				}
+			}
+
+		}
+	}
+	if (propiedad>0 && propiedad<10){
+		cocos2d::log("Estamos dentro del primer if ");
+		simbolo->setPosition(Vec2(listax[propiedad]-2,listay[propiedad]+40));
+	}else{
+		if (propiedad>10 && propiedad<20){
+			cocos2d::log("Estamos dentro del segundo if ");
+			simbolo->setPosition(Vec2(listax[propiedad]+55,listay[propiedad]));
+			simbolo->setRotation(90);
+		}else{
+			if (propiedad>20 && propiedad<30){
+				cocos2d::log("Estamos dentro del tercer if ");
+				simbolo->setPosition(Vec2(listax[propiedad]-3,listay[propiedad]-38));
+				simbolo->setRotation(180);
+			}else{
+				if (propiedad>30 && propiedad<40){
+					cocos2d::log("Estamos dentro del cuarto if ");
+					simbolo->setPosition(Vec2(listax[propiedad]-38,listay[propiedad]));
+					simbolo->setRotation(270);
+				}
+			}
+		}
+	}
+	simbolo->setScale(escala);
+	char nombre_construccion[100];
+	sprintf(nombre_construccion,"Casas_%d",propiedad);
+	this->removeChildByName(nombre_construccion);
+	this->addChild(simbolo,4,nombre_construccion);
+}
+
+bool GameScreen::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event){
     char mostrar[100] = {0};
     float x = touch->getLocationInView().x;
     float y = touch->getLocationInView().y;

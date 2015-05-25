@@ -61,7 +61,7 @@ bool ConfigScreen::init()
     //Creamos y mostarmos el fondo
     auto background = Sprite::create("fondo_inicio_nb.png");
     background->setPosition(Vec2(visibleSize3.width/2 + origin3.x, visibleSize3.height/2 + origin3.y));
-    background->setScale(visibleSize3.width/background->getContentSize().width);
+    background->setScale(visibleSize3.height/background->getContentSize().height);
     this->addChild(background,-1,"background");
 
 
@@ -213,6 +213,8 @@ void ConfigScreen::crearEditBox(){
 	editJugador4->setReturnType(ui::EditBox::KeyboardReturnType::DONE);
 	this->addChild(editJugador4);
 
+	//en principio ocultamos este editbox
+	editJugador4->setVisible(false);
 }
 //Guardar en el archivo JSON la nueva partida que acabamos de crear en la pantalla de configuración
 void ConfigScreen::crearPartidaJson(int num){

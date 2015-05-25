@@ -7,17 +7,21 @@
 #define __BUILDMENU_H__
 
 #include "cocos2d.h"
+#include "GUI/CCControlExtension/CCControlExtensions.h"
 USING_NS_CC;
 class BuildScreen : public cocos2d::Layer{
 public:
     virtual bool init();
     CREATE_FUNC(BuildScreen);
     void cargarPartida();
-    void volverAtras(Ref* pSender);
-    void cerrarPausa(Ref* pSender);
     void comprobarGrupoColor(int jugador);
-    void crearTarjetasGrupoColor(const char * color,int columna);
+    void crearTarjetas(const char * color,int columna);
+    void crearTarjetasGrupoColor(int columna);
+    void mostrarMenuConstruir(Ref* pSender);
+    void valueSliderChange(Ref* sender, cocos2d::extension::Control::EventType evnt);
     void construirEdificio(Ref* pSender);
+    void cerrarConstruir(Ref* pSender);
+    void escribirArchivoJSON();
 
 };
 

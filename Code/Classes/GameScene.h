@@ -35,6 +35,8 @@ public:
     void mostrarMenuPausa(Ref* psender);
     void mostrarBotonConstruir();
     void mostrarMenuConstruir(Ref* psender);
+    void mostrarBotonNegociar();
+    void mostrarMenuNegociar(Ref* psender);
     void mostrarTurno(int jugador);
     void crearFichas();
     void escribirArchivoJSON();
@@ -64,6 +66,8 @@ public:
     void tarjetaComunidad();
     void ejecutarAccionSuerte(Ref* pSender);
     void ejecutarAccionComunidad(Ref* pSender);
+    void actualizarConstrucciones();
+    void colocarSimboloConstruccion(int propiedad,int numero);
 
 
     //Prueba para la ficha  muestra donde estamos tocando

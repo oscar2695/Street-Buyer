@@ -53,7 +53,7 @@ bool MainMenu::init()
     //Creamos y mostarmos el fondo
     auto background = Sprite::create("fondo_inicio.png");
     background->setPosition(Vec2(visibleSize2.width/2 + origin2.x, visibleSize2.height/2 + origin2.y));
-    background->setScale(visibleSize2.width/background->getContentSize().width);
+    background->setScale(visibleSize2.height/background->getContentSize().height);
     this->addChild(background,-1,"background");
 
     //boton nueva partida
